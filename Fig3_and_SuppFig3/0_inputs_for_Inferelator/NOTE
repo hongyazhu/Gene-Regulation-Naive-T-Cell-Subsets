@@ -1,8 +1,11 @@
-# normGeneExprFile: ('gene_exp_matrix/counts_vst_blindT_combat.txt')
-# generated in Fig1_and_SuppFig1/2_RNAseq_preprocessing_and_removing_batch_effects.R
+normGeneExprFile: ('gene_exp_matrix/counts_vst_blindT_combat.txt')
+generated in Fig1_and_SuppFig1/2_RNAseq_preprocessing_and_removing_batch_effects.R
 
-# targGeneFile: ('inputs/genes_DE/deg_padj01.txt')
+targGeneFile: ('inputs/genes_DE/deg_padj01.txt')
+generated as in generate_targGeneFile.R
 
 potRegFile = 'TF/regulators.txt';
+generated as in generate_potRegFile.R
+
 priorFile = 'prior/priors_more_than_atac_nofli1/chip_ko_network_atac.tsv';
-                
+In progress
