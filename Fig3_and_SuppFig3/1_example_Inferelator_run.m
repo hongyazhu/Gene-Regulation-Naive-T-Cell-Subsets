@@ -1,5 +1,6 @@
-# Example Inferelator run
-# Inferelator: Miraldi et al. (2018) "Leveraging chromatin accessibility for transcriptional regulatory network inference in T Helper 17 Cells"
+%% Example Inferelator run
+%% Inferelator: Miraldi et al. (2018) "Leveraging chromatin accessibility for transcriptional regulatory network inference in T Helper 17 Cells"
+%% code were adapted from example_workflow_Th17 by Dr. Emily Miraldi (https://github.com/emiraldi/infTRN_lassoStARS)
 
 function funcGridSeed_lambdaTfaopt_modelSize10_priorChipKONetwork_seed()
     tfaOpts = {'', '_TFmRNA'};
