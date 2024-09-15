@@ -1,0 +1,110 @@
+### Micro-C data analysis
+# by Jason Chobirko and Hongya Zhu
+
+# input arguments
+ref=$1 # bwa/genome.fa
+fq1=$2 # A1_CKDL210008833-1a-5_HG7NFCCX2_L8_1.fq.gz
+fq2=$3 # A1_CKDL210008833-1a-5_HG7NFCCX2_L8_2.fq.gz
+outprefix=$4 # A1
+rg=$5 # A1_1a-5
+cores=$6 # 13
+
+# get source directory
+SRCDIR=`dirname $0`
+halfCores=`expr $cores / 2`
+
+samtools faidx ${ref}
+cut -f1,2 ${ref}".fai" > ${outprefix}".genome"
+genome=${outprefix}".genome"
+
+bwa mem -5SP -T0 -t${cores} \
+    -R "@RG\tID:$rg\tSM:$rg\tLB:$rg\tPL:ILLUMINA\tPU:none" \
+    $ref \
+    $fq1 \
+    $fq2 \
+| pairtools parse \
+        --chroms-path ${genome} \
+        --min-mapq 40 \
+        --walks-policy 5unique \
+        --max-inter-align-gap 30 \
+        --nproc-in ${halfCores} --nproc-out ${halfCores} \
+| pairtools sort  \
+        --nproc ${cores} \
+| pairtools dedup \
+        --nproc-in ${halfCores} --nproc-out ${halfCores} \
+        --mark-dups  \
+        --output-stats ${outprefix}-PT.stats.txt \
+        --output-dups - \
+| pairtools split \
+        --nproc-in ${halfCores} --nproc-out ${halfCores} \
+        --output-pairs ${outprefix}.PT.pairs.gz  \
+        --output-sam - \
+| samtools view -bS - \
+| samtools sort -@${halfCores} - -o ${outprefix}-PT.bam
+
+
+samtools index ${outprefix}-PT.bam
+
+/home/awg58_0001/jdc397/preseq/preseq lc_extrap -D -v -B -P -e 2.1e9 -s 1e8 -seg_len 1000000000 -o ${outprefix}.preseq ${outprefix}-PT.bam 2>${outprefix}-preseq.log
+
+${SRCDIR}/get_qc.py -p ${outprefix}-PT.stats.txt -d ${outprefix}.preseq > ${outprefix}.qc
+
+# Now output a .pairs.gz file WITHOUT dups!
+pairtools dedup --nproc-in ${halfCores} --nproc-out ${halfCores} --max-mismatch 1 -o ${outprefix}.PT.deDup.pairs.gz ${outprefix}.PT.pairs.gz
+
+mkdir tmp
+pairtools merge --nproc 36 --nproc-in 36 --nproc-out 36 --memory 300G --tmpdir tmp/ adt1A_TN.pairs.gz $(ls {A1,B2,C2,F1}*.pairs.gz) $(ls raw_data/{A1,B2,C2,F1}/*.pairs.gz) | pairtools sort --nproc 36 | pairtools dedup --nproc-in 36 --nproc-out 36 --max-mismatch 1 --output-stats adult_cd8.stats.txt -o adult_cd8.deDup.pairs.gz
+
+# Generate the requested .hic file for downstream analyses
+java -Xmx300g -jar /programs/juicer-1.6.2/CPU/common/juicer_tools.jar pre adult_cd8.deDup.pairs.gz adult_cd8.hic mm10
+
+
+# hiccups to get loops
+nohup java -Xmx10g -jar juicer_tools_1.22.01.jar hiccups --cpu -r 1000,5000,10000,25000,50000 --threads 10 -k KR -f 0.001,0.001,0.001,0.001,0.001 --ignore-sparsity adult_cd8.hic adult_cd8_hiccups_fdr0001 > adult_cd8_hiccups_fdr0001.log 2> adult_cd8_hiccups_fdr0001.err &
+
+# overlap loops with ATAC-seq peaks to get loops in open chromatin regions
+bedtools intersect -a ATACseq_peaks.bed -b adult_cd8_hiccups_fdr0001/merged_loops_sort.bed -wb > merged_loops_sort_overlapATAC.bed # loop ends in open chromatin regions, now link them back as loops
+
+# read in overlapped regions between loop ends and ATAC-seq peaks (in R)
+overlapbed = read.table('merged_loops_sort_overlapATAC.bed')
+library(dplyr)
+nrow(overlapbed[,4:6] %>% distinct())
+overlapbed$regions_overlap = paste0(overlapbed$V1, ':', overlapbed$V2, '-', overlapbed$V3)
+overlapbed$regions_loop = paste0(overlapbed$V4, ':', overlapbed$V5, '-', overlapbed$V6)
+overlapbed = overlapbed[, c('regions_overlap', 'regions_loop')]
+
+# read in loops to find open regions of the loops
+loops = read.table('adult_cd8_hiccups_fdr0001/merged_loops.bedpe')
+loops = loops[, c(1:6)]
+loops$V1 = paste0('chr', loops$V1)
+loops$V4 = paste0('chr', loops$V4)
+loops$region1 = paste0(loops$V1, ':', loops$V2, '-', loops$V3)
+loops$region2 = paste0(loops$V4, ':', loops$V5, '-', loops$V6)
+loops = loops[, c('region1', 'region2')]
+loops_with_overlap = merge(loops, overlapbed, by.x = 'region1', by.y = 'regions_loop')
+colnames(loops_with_overlap)[3] = "regions_overlap_1"
+loops_with_overlap = merge(loops_with_overlap, overlapbed, by.x = 'region2', by.y = 'regions_loop')
+colnames(loops_with_overlap)[4] = "regions_overlap_2"
+
+# get the "open loops" to the bed and bedpe formats
+loops_with_overlap$regions_overlap_1_chr = gsub('chr', '', gsub(':.*', '', loops_with_overlap$regions_overlap_1))
+loops_with_overlap$regions_overlap_1_start = gsub('-.*', '', gsub('.*:', '', loops_with_overlap$regions_overlap_1))
+loops_with_overlap$regions_overlap_1_end = gsub('.*-', '', gsub('.*:', '', loops_with_overlap$regions_overlap_1))
+loops_with_overlap$regions_overlap_2_chr = gsub('chr', '', gsub(':.*', '', loops_with_overlap$regions_overlap_2))
+loops_with_overlap$regions_overlap_2_start = gsub('-.*', '', gsub('.*:', '', loops_with_overlap$regions_overlap_2))
+loops_with_overlap$regions_overlap_2_end = gsub('.*-', '', gsub('.*:', '', loops_with_overlap$regions_overlap_2))
+loops_with_overlap_out = loops_with_overlap[, c(5:10)]
+write.table(loops_with_overlap_out, 'merged_loops_open.bedpe', row.names = F, col.names = F, quote = F, sep = '\t')
+
+# bedpe to bed
+library(dplyr)
+bed1 = loops_with_overlap_out[,1:3] %>% distinct()
+colnames(bed1) = c('Chr', 'Start', 'Stop')
+bed2 = loops_with_overlap_out[,4:6] %>% distinct()
+colnames(bed2) = c('Chr', 'Start', 'Stop')
+
+loops_with_overlap_out_bed = rbind(bed1, bed2)
+loops_with_overlap_out_bed = loops_with_overlap_out_bed %>% distinct()
+loops_with_overlap_out_bed$Chr = paste0('chr', loops_with_overlap_out_bed$Chr)
+write.table(loops_with_overlap_out_bed, 'merged_loops_open.bed', 
+            quote=FALSE, row.names=FALSE, col.names=FALSE, sep='\t')
