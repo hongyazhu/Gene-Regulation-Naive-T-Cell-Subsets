@@ -1,3 +1,5 @@
+# Visualization (Fig. 3F)
+
 import numpy as np
 import hicstraw
 from matplotlib.colors import LinearSegmentedColormap
