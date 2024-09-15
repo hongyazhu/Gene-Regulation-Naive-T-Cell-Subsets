@@ -5,7 +5,7 @@ awk -F'\t' '{print $1}' ${i}.txt | awk -F'\\:' '$1=$1' OFS="\t" | awk -F'\\-' '$
 done
 
 
-### motif enrichment with AME
+### motif enrichment with AME (Fig 2G)
 
 cd bed
 for i in $(ls | sed 's/.bed//'); do
