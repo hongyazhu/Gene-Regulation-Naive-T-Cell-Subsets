@@ -8,7 +8,7 @@ net = read.table(paste0('chip_ko_network_atac_ms', ms, '_bias', bias, '_maxComb_
                  header = T)
 
 ### get differential expression results 
-source Fig1_and_SuppFig1/4_DE.R
+source('Fig1_and_SuppFig1/4_DE.R')
 
 resSig.MP_TN = resSig.TN_MP
 resSig.MP_TN$log2FoldChange_rev = -resSig.MP_TN$log2FoldChange
