@@ -86,8 +86,6 @@ MyMerge <- function(x, y){
 }
 sp_all <- Reduce(MyMerge, list(sp, sp_seed7, sp_seed99, sp_seed26, sp_seed57))
 
-# num = 4
-
 for (num in 2){ # 1:4
   
   sp_interest_names = names(res_table[res_table > num])
@@ -125,7 +123,6 @@ for (num in 2){ # 1:4
   
   notsp_new <- notsp[ order(row.names(notsp)), ]
   notsp_new <- notsp[ , order(colnames(notsp))]
-  
   
   write.table(notsp_new, paste0('runs/sharedbyMorethan', num, 'netsFrom5seeds/chip_ko_network_atac_ms10_bias50_maxComb_cut01_sharedbyMorethan', num, 'nets.tsv'), sep = '\t', quote = F, col.names=NA)
 }
