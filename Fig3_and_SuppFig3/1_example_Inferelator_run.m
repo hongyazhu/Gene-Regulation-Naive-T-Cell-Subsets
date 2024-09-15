@@ -7,7 +7,7 @@ function funcGridSeed_lambdaTfaopt_modelSize10_priorChipKONetwork_seed()
     for tfaOptNum = 1:length(tfaOpts)
         for lambdaBias = [0.05, 0.25, 0.5, 0.75, 1]
             for seed = [7,99,26,57]
-                rng(seed) # or rng('default') for the fifth random seed
+                rng(seed) % rng('default') for the fifth random seed
                 tfaOpt = tfaOpts{tfaOptNum};
                 meanEdgesPerGene = 10;
                 name_this_run = ['func_seed' num2str(seed) '_bias' num2str(100*lambdaBias) tfaOpt '_modelSize' num2str(meanEdgesPerGene)];
