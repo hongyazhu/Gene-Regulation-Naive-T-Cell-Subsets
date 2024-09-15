@@ -76,6 +76,7 @@ pca_plot$info = factor(pca_plot$info, levels = c('TN Adult Clean', 'TN Adult Dir
                                                  'All Adult Clean', 'All Adult Dirty', 'All Neo Clean', 'All Neo Dirty',
                                                  'VM Adult Clean', 'VM Adult Dirty', 'VM Neo Clean', 'VM Neo Dirty'))
 pca_plot$age_clean = paste0(pca_plot$Age, " ", pca_plot$Clean) 
+library(ggtext)
 ggplot(pca_plot, aes(x = PC1, y= PC2)) +
   geom_point(size = 3, aes(colour = CellType, shape = age_clean)) +
   theme_bw(base_size = 14) +
