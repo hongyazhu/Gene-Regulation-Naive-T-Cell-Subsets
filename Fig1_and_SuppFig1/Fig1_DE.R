@@ -5,11 +5,11 @@ padj_cutoff = 1 # include all
 
 # clean vs dirty
 
-counts_dirty = read.table("/path/to/Tabilas2022_RNAseq/counts_name.txt", header = T, row.names = 1)
+counts_dirty = read.table("Tabilas2022_RNAseq/counts_name.txt", header = T, row.names = 1)
 counts_dirty = counts_dirty[,6:ncol(counts_dirty)]
 coln_tmp = sub('.*CD', 'CD', colnames(counts_dirty))
 coln_tmp = sub('_CKDL.*', '', coln_tmp)
-targetFile = read.table('/path/to/Tabilas2022_RNAseq/targetFile.txt', header = T)
+targetFile = read.table('Tabilas2022_RNAseq/targetFile.txt', header = T)
 targetFile$cd = sub('.ReadsPerGene.out.tab.rawCounts', '', targetFile$files)
 colnames(counts_dirty) = targetFile[match(coln_tmp, targetFile$cd),]$label
 counts_dirty_nobulk = counts_dirty[, !grepl("B.", colnames(counts_dirty))]
@@ -37,11 +37,11 @@ clean <- as.data.frame(subset(resSig.clean_dirty, log2FoldChange < 0))
 
 # neo vs adult
 
-counts_dirty = read.table("/path/to/Tabilas2022_RNAseq/counts_name.txt", header = T, row.names = 1)
+counts_dirty = read.table("Tabilas2022_RNAseq/counts_name.txt", header = T, row.names = 1)
 counts_dirty = counts_dirty[,6:ncol(counts_dirty)]
 coln_tmp = sub('.*CD', 'CD', colnames(counts_dirty))
 coln_tmp = sub('_CKDL.*', '', coln_tmp)
-targetFile = read.table('/path/to/targetFile.txt', header = T)
+targetFile = read.table('targetFile.txt', header = T)
 targetFile$cd = sub('.ReadsPerGene.out.tab.rawCounts', '', targetFile$files)
 colnames(counts_dirty) = targetFile[match(coln_tmp, targetFile$cd),]$label
 counts_dirty_nobulk = counts_dirty[, !grepl("B.", colnames(counts_dirty))]
@@ -53,7 +53,7 @@ colnames(coldata_dirty_nobulk) = c('age', 'type', 'clean')
 rownames(coldata_dirty_nobulk) = colnames(counts_dirty_nobulk)
 coldata_dirty_nobulk$source = 'Dirty_Project'
 
-counts_cell2018 = read.table("/path/to/Smith2018_RNAseq/counts_name.txt", header = T, row.names = 1)
+counts_cell2018 = read.table("Smith2018_RNAseq/counts_name.txt", header = T, row.names = 1)
 counts_cell2018 = counts_cell2018[,6:ncol(counts_cell2018)]
 colnames(counts_cell2018) = c("all_neo_rep1", "all_neo_rep2", "all_adult_rep1", "all_adult_rep2",
                               "vm_neo_rep1", "vm_neo_rep2", "vm_adult_rep1", "vm_adult_rep2",
@@ -92,11 +92,11 @@ adult <- as.data.frame(subset(resSig.neo_adult, log2FoldChange < 0))
 
 # tn vs vm
 
-counts_dirty = read.table("/path/to/Tabilas2022_RNAseq/counts_name.txt", header = T, row.names = 1)
+counts_dirty = read.table("Tabilas2022_RNAseq/counts_name.txt", header = T, row.names = 1)
 counts_dirty = counts_dirty[,6:ncol(counts_dirty)]
 coln_tmp = sub('.*CD', 'CD', colnames(counts_dirty))
 coln_tmp = sub('_CKDL.*', '', coln_tmp)
-targetFile = read.table('/path/to/targetFile.txt', header = T)
+targetFile = read.table('targetFile.txt', header = T)
 targetFile$cd = sub('.ReadsPerGene.out.tab.rawCounts', '', targetFile$files)
 colnames(counts_dirty) = targetFile[match(coln_tmp, targetFile$cd),]$label
 counts_dirty_nobulk = counts_dirty[, !grepl("B.", colnames(counts_dirty))]
@@ -109,7 +109,7 @@ rownames(coldata_dirty_nobulk) = colnames(counts_dirty_nobulk)
 coldata_dirty_nobulk$source = 'Dirty_Project'
 coldata_dirty_nobulk$rte = 'Mat'
 
-counts_cell2018 = read.table("/path/to/Smith2018_RNAseq/counts_name.txt", header = T, row.names = 1)
+counts_cell2018 = read.table("Smith2018_RNAseq/counts_name.txt", header = T, row.names = 1)
 counts_cell2018 = counts_cell2018[,6:ncol(counts_cell2018)]
 colnames(counts_cell2018) = c("all_neo_rep1", "all_neo_rep2", "all_adult_rep1", "all_adult_rep2",
                               "vm_neo_rep1", "vm_neo_rep2", "vm_adult_rep1", "vm_adult_rep2",
@@ -127,7 +127,7 @@ coldata_cell2018$clean = 'C'
 coldata_cell2018$source = 'Cell_2018'
 coldata_cell2018$rte = 'Mat'
 
-counts_veteran = read.table("/path/to/this_study_RNAseq/counts_name.txt", header = T, row.names = 1)
+counts_veteran = read.table("this_study_RNAseq/counts_name.txt", header = T, row.names = 1)
 counts_veteran = counts_veteran[, 6:ncol(counts_veteran)]
 colnames(counts_veteran)[1:8] = substr(colnames(counts_veteran)[1:8], 41, 48)
 colnames(counts_veteran)[9:ncol(counts_veteran)] = substr(colnames(counts_veteran)[9:ncol(counts_veteran)], 11, 18)
