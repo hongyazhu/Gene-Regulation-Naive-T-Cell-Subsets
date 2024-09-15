@@ -9,7 +9,7 @@ function funcGridSeed_lambdaTfaopt_modelSize10_priorChipKONetwork_seed()
             for seed = [7,99,26,57]
                 rng(seed) % rng('default') for the fifth random seed
                 tfaOpt = tfaOpts{tfaOptNum};
-                meanEdgesPerGene = 10;
+                meanEdgesPerGene = 10; % 5, 15, 20 were also tested
                 name_this_run = ['func_seed' num2str(seed) '_bias' num2str(100*lambdaBias) tfaOpt '_modelSize' num2str(meanEdgesPerGene)];
                 diaryFile = ['outputs/230525/func_modelSize' num2str(meanEdgesPerGene) '_seed' num2str(seed) '/' name_this_run '.log'];
                 matlabDir = 'infTRN_lassoStARS-master'; % downloaded from https://github.com/emiraldi/infTRN_lassoStARS
