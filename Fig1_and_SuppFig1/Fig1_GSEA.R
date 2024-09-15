@@ -5,11 +5,11 @@ padj_cutoff = 0.001
 
 # clean dirty
 
-counts_dirty = read.table("/path/to/Tabilas2022_RNAseq/counts_name.txt", header = T, row.names = 1)
+counts_dirty = read.table("Tabilas2022_RNAseq/counts_name.txt", header = T, row.names = 1)
 counts_dirty = counts_dirty[,6:ncol(counts_dirty)]
 coln_tmp = sub('.*CD', 'CD', colnames(counts_dirty))
 coln_tmp = sub('_CKDL.*', '', coln_tmp)
-targetFile = read.table('/path/to/Tabilas2022_RNAseq/targetFile.txt', header = T)
+targetFile = read.table('Tabilas2022_RNAseq/targetFile.txt', header = T)
 targetFile$cd = sub('.ReadsPerGene.out.tab.rawCounts', '', targetFile$files)
 colnames(counts_dirty) = targetFile[match(coln_tmp, targetFile$cd),]$label
 counts_dirty_nobulk = counts_dirty[, !grepl("B.", colnames(counts_dirty))]
@@ -37,11 +37,11 @@ clean <- rownames(subset(resSig.dirty_clean, log2FoldChange < 0))# changed name 
 
 # neo vs adult
 
-counts_dirty = read.table("/path/to/Tabilas2022_RNAseq/counts_name.txt", header = T, row.names = 1)
+counts_dirty = read.table("Tabilas2022_RNAseq/counts_name.txt", header = T, row.names = 1)
 counts_dirty = counts_dirty[,6:ncol(counts_dirty)]
 coln_tmp = sub('.*CD', 'CD', colnames(counts_dirty))
 coln_tmp = sub('_CKDL.*', '', coln_tmp)
-targetFile = read.table('/path/to/Tabilas2022_RNAseq/targetFile.txt', header = T)
+targetFile = read.table('Tabilas2022_RNAseq/targetFile.txt', header = T)
 targetFile$cd = sub('.ReadsPerGene.out.tab.rawCounts', '', targetFile$files)
 colnames(counts_dirty) = targetFile[match(coln_tmp, targetFile$cd),]$label
 counts_dirty_nobulk = counts_dirty[, !grepl("B.", colnames(counts_dirty))]
@@ -53,7 +53,7 @@ colnames(coldata_dirty_nobulk) = c('age', 'type', 'clean')
 rownames(coldata_dirty_nobulk) = colnames(counts_dirty_nobulk)
 coldata_dirty_nobulk$source = 'Dirty_Project'
 
-counts_cell2018 = read.table("/path/to/Smith2018_RNAseq/counts_name.txt", header = T, row.names = 1)
+counts_cell2018 = read.table("Smith2018_RNAseq/counts_name.txt", header = T, row.names = 1)
 counts_cell2018 = counts_cell2018[,6:ncol(counts_cell2018)]
 colnames(counts_cell2018) = c("all_neo_rep1", "all_neo_rep2", "all_adult_rep1", "all_adult_rep2",
                               "vm_neo_rep1", "vm_neo_rep2", "vm_adult_rep1", "vm_adult_rep2",
@@ -95,11 +95,11 @@ adult <- rownames(subset(resSig.neo_adult, log2FoldChange < 0))
 # tn vs vm
 
 
-counts_dirty = read.table("/path/to/Tabilas2022_RNAseq/counts_name.txt", header = T, row.names = 1)
+counts_dirty = read.table("Tabilas2022_RNAseq/counts_name.txt", header = T, row.names = 1)
 counts_dirty = counts_dirty[,6:ncol(counts_dirty)]
 coln_tmp = sub('.*CD', 'CD', colnames(counts_dirty))
 coln_tmp = sub('_CKDL.*', '', coln_tmp)
-targetFile = read.table('/path/to/Tabilas2022_RNAseq/targetFile.txt', header = T)
+targetFile = read.table('Tabilas2022_RNAseq/targetFile.txt', header = T)
 targetFile$cd = sub('.ReadsPerGene.out.tab.rawCounts', '', targetFile$files)
 colnames(counts_dirty) = targetFile[match(coln_tmp, targetFile$cd),]$label
 counts_dirty_nobulk = counts_dirty[, !grepl("B.", colnames(counts_dirty))]
@@ -112,7 +112,7 @@ rownames(coldata_dirty_nobulk) = colnames(counts_dirty_nobulk)
 coldata_dirty_nobulk$source = 'Dirty_Project'
 coldata_dirty_nobulk$rte = 'Mat'
 
-counts_cell2018 = read.table("/path/to/Smith2018_RNAseq/counts_name.txt", header = T, row.names = 1)
+counts_cell2018 = read.table("Smith2018_RNAseq/counts_name.txt", header = T, row.names = 1)
 counts_cell2018 = counts_cell2018[,6:ncol(counts_cell2018)]
 colnames(counts_cell2018) = c("all_neo_rep1", "all_neo_rep2", "all_adult_rep1", "all_adult_rep2",
                               "vm_neo_rep1", "vm_neo_rep2", "vm_adult_rep1", "vm_adult_rep2",
@@ -311,7 +311,7 @@ ggplot(forplot, aes(x = type, y = pathway)) +
   guides(size = guide_legend(title='-log10(adj p-val)')) +
   facet_grid2(Group ~ ., scales = 'free', space = 'free', switch = "y", strip = strip)
 ggsave(
-  paste0('/path/to/dotplot_logFC.pdf'),
+  paste0('dotplot_logFC.pdf'),
   plot = last_plot(),
   device = "pdf",
   width = 7,
@@ -362,7 +362,7 @@ ggplot(forplot_add_res, aes(x = type, y = pathway)) +
   facet_grid2(Group ~ ., scales = 'free', space = 'free', switch = "y", strip = strip)
 # + scale_size_continuous(limits = c(3, 9)) # dot size legend
 ggsave(
-  paste0('/path/to/dotplot_logFC_add_res.pdf'),
+  paste0('dotplot_logFC_add_res.pdf'),
   plot = last_plot(),
   device = "pdf",
   width = 7,
