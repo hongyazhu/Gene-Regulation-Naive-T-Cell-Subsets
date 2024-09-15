@@ -1,0 +1,36 @@
+# by Paul Munn at TREx of Cornell University
+
+trim_galore \
+    --quality 20 --gzip --length 20 --paired --fastqc \
+    --fastqc_args "-t 4 --outdir $params.project_dir/fastQC" \
+    --suppress_warn $reads
+
+bowtie2 \
+    --no-unal \
+    -x $genome \
+    -1 $m1 -2 $m2 \
+    --threads 12 \
+    -S ${prefix}.sam \
+    &> ${prefix}.bowtie2.log
+
+java -jar /programs/bin/picard-tools/picard.jar \
+    MarkDuplicates \
+    INPUT=$noBlacklist_bam_file \
+    OUTPUT=${prefix}.dupMarked.noBlacklist.bam \
+    ASSUME_SORTED=true \
+    REMOVE_DUPLICATES=false \
+    METRICS_FILE=${prefix}.MarkDuplicates.metrics.txt \
+    VALIDATION_STRINGENCY=LENIENT \
+    TMP_DIR=tmp
+
+macs2 callpeak -t $DEDUP_bam_file \
+    -f BAMPE \
+    -n ${prefix} \
+    -g $genomeSize \
+    -q $params.callPeak_q_value \
+    --nolambda \
+    --fe-cutoff 1 \
+    --keep-dup all 
+
+samtools index $DEDUP_bam_file
+bamCoverage -b $DEDUP_bam_file -o \${prefix}.bw --normalizeUsing CPM --binSize 50 --numberOfProcessors 12 --effectiveGenomeSize $effective_genome_size
