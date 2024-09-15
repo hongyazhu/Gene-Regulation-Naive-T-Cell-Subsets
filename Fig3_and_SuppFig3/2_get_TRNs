@@ -1,6 +1,7 @@
 # combining TFA and TF mRNA TRNs was done with combine_Th17_TRNs.m from https://github.com/emiraldi/infTRN_lassoStARS
 # filtering was done with filter_Th17_TRNs_by_pcorr.sh from https://github.com/emiraldi/infTRN_lassoStARS
 
+# I ran inferelator 5 times with 5 different seeds. Here to find TF-gene regulations shared by more than 2 runs (3 or more)
 sp = read.table('chip_ko_network_atac_ms10_bias50_maxComb/chip_ko_network_atac_ms10_bias50_maxComb_cut01_sp.tsv', sep = '\t', header = T)
 sp_seed7 = read.table('chip_ko_network_atac_ms10_bias50_seed26_maxComb/chip_ko_network_atac_ms10_bias50_seed26_maxComb_cut01_sp.tsv', sep = '\t', header = T)
 sp_seed99 = read.table('chip_ko_network_atac_ms10_bias50_seed57_maxComb/chip_ko_network_atac_ms10_bias50_seed57_maxComb_cut01_sp.tsv', sep = '\t', header = T)
