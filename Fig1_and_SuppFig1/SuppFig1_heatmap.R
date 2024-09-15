@@ -1,9 +1,9 @@
 # Heatmap (Supp Fig. 1H-I, and Supp Tables 1-2)
 
-counts_combat = read.table('/path/to/gene_exp_matrix/counts_vst_blindT_combat.txt')
-targ_genes = read.table('/path/to/genes_DE/deg_padj01.txt')$V1
+counts_combat = read.table('counts_vst_blindT_combat.txt')
+targ_genes = read.table('deg_padj01.txt')$V1
 counts_combat_targ = counts_combat[rownames(counts_combat) %in% targ_genes,]
-sample_info = read.table("/path/to/gene_exp_matrix/sample_info.txt", header = T, sep = "\t")
+sample_info = read.table("sample_info.txt", header = T, sep = "\t")
 sample_info$CellType <- replace(sample_info$CellType, sample_info$CellType == 'MP', 'VM') 
 sample_info$Clean <- replace(sample_info$Clean, sample_info$Clean == 'C', 'Clean') 
 sample_info$Clean <- replace(sample_info$Clean, sample_info$Clean == 'D', 'Dirty') 
@@ -52,19 +52,19 @@ labs.row <- rownames(counts_combat_targ_reorder)
 labs.row = ifelse(labs.row %in% labels, labs.row, '')
 heatmap = pheatmap(counts_combat_targ_reorder, scale = 'row', cluster_cols=F, show_colnames = F, treeheight_row = 0, # show_rownames = F, 
                    annotation_col = anno, breaks = breaks_5, annotation_colors = cols_anno, labels_row = labs.row)
-save_pheatmap_pdf(heatmap, "/path/to/heatmap/heatmap_breaks5_wide_legendYlBu_someLabels.pdf", width=6, height=5)
+save_pheatmap_pdf(heatmap, "heatmap/heatmap_breaks5_wide_legendYlBu_someLabels.pdf", width=6, height=5)
 
 heatmapTable = counts_combat_targ_reorder_scaled[heatmap$tree_row[["order"]],]
 colnames(heatmapTable) = anno$CellType
-write.table(heatmapTable, "/path/to/heatmap/heatmap_breaks5_wide_legendYlBu.txt",
+write.table(heatmapTable, "heatmap/heatmap_breaks5_wide_legendYlBu.txt",
             quote = F, sep = '\t', row.names = T, col.names = T)
 
 
 # heatmap - TFs
-counts_combat = read.table('/path/to/gene_exp_matrix/counts_vst_blindT_combat.txt')
-tfs = read.table('/path/to/TF/regulators.txt')$V1
+counts_combat = read.table('counts_vst_blindT_combat.txt')
+tfs = read.table('regulators.txt')$V1
 counts_combat_tf = counts_combat[rownames(counts_combat) %in% tfs,]
-sample_info = read.table("/path/to/gene_exp_matrix/sample_info.txt", header = T, sep = "\t")
+sample_info = read.table("sample_info.txt", header = T, sep = "\t")
 sample_info$CellType <- replace(sample_info$CellType, sample_info$CellType == 'MP', 'VM') 
 sample_info$Clean <- replace(sample_info$Clean, sample_info$Clean == 'C', 'Clean') 
 sample_info$Clean <- replace(sample_info$Clean, sample_info$Clean == 'D', 'Dirty') 
@@ -105,8 +105,8 @@ labs.row <- rownames(counts_combat_tf_reorder)
 labs.row = ifelse(labs.row %in% labels, labs.row, '')
 heatmap = pheatmap(counts_combat_tf_reorder, scale = 'row', cluster_cols=F, show_colnames = F, treeheight_row = 0, # show_rownames = F, 
                    annotation_col = anno, breaks = breaks_5, annotation_colors = cols_anno, labels_row = labs.row)
-save_pheatmap_pdf(heatmap, "/path/to/heatmap/heatmap_TFs_wide_legendYlBu_someLabels.pdf", width=6, height=3)
+save_pheatmap_pdf(heatmap, "heatmap/heatmap_TFs_wide_legendYlBu_someLabels.pdf", width=6, height=3)
 
 heatmapTable = counts_combat_tf_reorder_scaled[heatmap$tree_row[["order"]],]
-write.table(heatmapTable, "/path/to/heatmap/heatmap_TFs_wide_legendYlBu.txt",
+write.table(heatmapTable, "heatmap/heatmap_TFs_wide_legendYlBu.txt",
             quote = F, sep = '\t', row.names = T, col.names = T)
