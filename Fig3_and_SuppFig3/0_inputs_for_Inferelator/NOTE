@@ -1,0 +1,8 @@
+# normGeneExprFile: ('gene_exp_matrix/counts_vst_blindT_combat.txt')
+# generated in Fig1_and_SuppFig1/2_RNAseq_preprocessing_and_removing_batch_effects.R
+
+# targGeneFile: ('inputs/genes_DE/deg_padj01.txt')
+
+potRegFile = 'TF/regulators.txt';
+priorFile = 'prior/priors_more_than_atac_nofli1/chip_ko_network_atac.tsv';
+                
