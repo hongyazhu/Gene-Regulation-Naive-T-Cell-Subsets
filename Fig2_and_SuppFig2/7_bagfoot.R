@@ -1,4 +1,4 @@
-# run bagfoot analysis
+# run bagfoot analysis (Fig 2H-J)
 
 # prep
 
@@ -154,3 +154,295 @@ prepNRunBaGFoot('adult.csv', 'neo.csv', 'adult', 'neo')
 prepNRunBaGFoot('clean.csv', 'dirty.csv', 'clean', 'dirty')
 prepNRunBaGFoot('tn.csv', 'vm.csv', tn, vm)
 
+
+# remake figures
+
+bagfootRes_dirty_clean = read.table("bagfoot/res_dirty_clean/bagplot_cutcount_diff_total_footprinting_depth_dirty-clean_qvalue_bagplot_output.csv", 
+                                 header = T,
+                                 sep = ",")
+colnames(bagfootRes_dirty_clean)[3:4] = c("x", "y")
+# prove plot should look same as automated generated one
+library(aplpack)
+bagplot(bagfootRes_dirty_clean$x, bagfootRes_dirty_clean$y, factor = 1.5,
+        show.looppoints = FALSE, show.bagpoints = FALSE,
+        show.baghull = TRUE, show.loophull = TRUE,
+        show.whiskers = F, col.looppoint = "#000000",
+        cex = 2, pch = 0, cex.lab = 1.5, cex.axis = 1.5,
+        lwd = 3)
+
+bagfootRes_dirty_clean_xy = bagfootRes_dirty_clean[,c("x", "y")]
+rownames(bagfootRes_dirty_clean_xy) = bagfootRes_dirty_clean_xy$name
+
+
+library(aplpack)
+bag <- compute.bagplot(bagfootRes_dirty_clean_xy, approx.limit = nrow(bagfootRes_dirty_clean_xy),
+                       factor = 1.5)
+
+hull.loop <- data.frame(x = bag$hull.loop[,1], y = bag$hull.loop[,2])
+hull.bag <- data.frame(x = bag$hull.bag[,1], y = bag$hull.bag[,2])
+pxy.outlier <- data.frame(x = bag$pxy.outlier[,1], y = bag$pxy.outlier[,2])
+
+findOutliersIndex <- function(data, outlier) {
+  cols <- colnames(outlier)
+  dat2 <- data[, cols]
+  nr = nrow(outlier)
+  rg = 1:nrow(dat2)
+  matchingIdx = unique(sort(unlist(sapply(1:nr, function(ii) rg[(outlier[ii,
+                                                                         2] == dat2[, 2]) & (outlier[ii, 1] == dat2[, 1])]))))
+  if (length(matchingIdx) != nr) {
+    stop("cannot locate outliers in the data.")
+  }
+  matchingIdx
+}
+nametoshow = rep("", nrow(bagfootRes_dirty_clean))
+if (!is.null(pxy.outlier)) {
+  outlieridx = findOutliersIndex(bagfootRes_dirty_clean, pxy.outlier)
+  nametoshow[outlieridx] = as.character(bagfootRes_dirty_clean$name[outlieridx])
+}
+bagfootRes_dirty_clean$nametoshow = nametoshow                                         
+# Finish the ggplot command
+
+for (i in 1:nrow(bagfootRes_dirty_clean)){
+  if (bagfootRes_dirty_clean[i,]$x * bagfootRes_dirty_clean[i,]$y < 0){
+    bagfootRes_dirty_clean[i,]$nametoshow = ""
+  }
+}                     
+
+head(bagfootRes_dirty_clean)
+
+# print selected labels only
+names_in_pre = c("EOMES", "TBX21", "Smad2::Smad3", "IRF2", "IRF3", "IRF4", "IRF7", "IRF9", "FOS", "FOS::JUN", "JUNB", "JUND","BATF", "BATF3", 
+                 "EGR1", "EGR3", "SP4")
+bagfootRes_dirty_clean$nametoshow_pre = bagfootRes_dirty_clean$nametoshow
+`%notin%` <- Negate(`%in%`)
+
+for (i in 1:nrow(bagfootRes_dirty_clean)){
+  if (bagfootRes_dirty_clean[i, 'nametoshow_pre'] %notin% names_in_pre)
+    bagfootRes_dirty_clean[i, 'nametoshow_pre'] = ""
+}
+
+library(ggrepel)
+library(ggtext)
+ggplot(bagfootRes_dirty_clean, aes(x = x,  y = y)) +
+  geom_polygon(data = hull.loop, fill = "gray", alpha = 0.35) +
+  geom_polygon(data = hull.bag, fill = "gray", alpha = 0.35) +
+  geom_point(data = pxy.outlier, col = "black", pch = 16, cex = 1.5) +
+  theme(panel.background = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #text = element_text(family="ArialMT", size=25),
+        axis.title.x = element_markdown(family="ArialMT")
+        ) + 
+  geom_text_repel(label=bagfootRes_dirty_clean$nametoshow_pre, max.overlaps = 100, 
+                  min.segment.length = unit(0, 'lines'))+
+  geom_hline(yintercept=0)+
+  geom_vline(xintercept=0)+
+  labs(
+    x = "\u0394FA<br><span style='color:#FF9300'>Dirty</span> - <span style='color:#FFFC66'>Clean</span>",
+    y = "\u0394FPD"
+  )
+ggsave(
+  "bagfoot/remake_plots/bagfootRes_dirty_clean.pdf",
+  plot = last_plot(),
+  device = cairo_pdf,
+  width = 10,
+  height = 10,
+  dpi = 300
+)
+
+
+
+
+
+# neo adult
+
+bagfootRes_neo_adult = read.table("bagfoot/res_neo_adult/bagplot_cutcount_diff_total_footprinting_depth_neo-adult_qvalue_bagplot_output.csv", 
+                                  header = T,
+                                  sep = ",")
+colnames(bagfootRes_neo_adult)[3:4] = c("x", "y")
+# prove plot should look same as automated generated one
+library(aplpack)
+bagplot(bagfootRes_neo_adult$x, bagfootRes_neo_adult$y, factor = 1.5,
+        show.looppoints = FALSE, show.bagpoints = FALSE,
+        show.baghull = TRUE, show.loophull = TRUE,
+        show.whiskers = F, col.looppoint = "#000000",
+        cex = 2, pch = 0, cex.lab = 1.5, cex.axis = 1.5,
+        lwd = 3)
+
+bagfootRes_neo_adult_xy = bagfootRes_neo_adult[,c("x", "y")]
+rownames(bagfootRes_neo_adult_xy) = bagfootRes_neo_adult_xy$name
+
+
+library(aplpack)
+bag <- compute.bagplot(bagfootRes_neo_adult_xy, approx.limit = nrow(bagfootRes_neo_adult_xy),
+                       factor = 1.5)
+
+hull.loop <- data.frame(x = bag$hull.loop[,1], y = bag$hull.loop[,2])
+hull.bag <- data.frame(x = bag$hull.bag[,1], y = bag$hull.bag[,2])
+pxy.outlier <- data.frame(x = bag$pxy.outlier[,1], y = bag$pxy.outlier[,2])
+
+findOutliersIndex <- function(data, outlier) {
+  cols <- colnames(outlier)
+  dat2 <- data[, cols]
+  nr = nrow(outlier)
+  rg = 1:nrow(dat2)
+  matchingIdx = unique(sort(unlist(sapply(1:nr, function(ii) rg[(outlier[ii,
+                                                                         2] == dat2[, 2]) & (outlier[ii, 1] == dat2[, 1])]))))
+  if (length(matchingIdx) != nr) {
+    stop("cannot locate outliers in the data.")
+  }
+  matchingIdx
+}
+nametoshow = rep("", nrow(bagfootRes_neo_adult))
+if (!is.null(pxy.outlier)) {
+  outlieridx = findOutliersIndex(bagfootRes_neo_adult, pxy.outlier)
+  nametoshow[outlieridx] = as.character(bagfootRes_neo_adult$name[outlieridx])
+}
+bagfootRes_neo_adult$nametoshow = nametoshow                                         
+# Finish the ggplot command
+
+for (i in 1:nrow(bagfootRes_neo_adult)){
+  if (bagfootRes_neo_adult[i,]$x * bagfootRes_neo_adult[i,]$y < 0){
+    bagfootRes_neo_adult[i,]$nametoshow = ""
+  }
+}                     
+
+head(bagfootRes_neo_adult)
+
+# print selected labels only
+names_in_pre = c("EOMES", "MGA", "TBX21", "TBX6", "RUNX2", "RUNX3", "BATF", "BATF3", "FOS", "FOS::JUN", "JUNB", "JUND", "BACH1", "BACH2",
+                 "EGR1", "EGR3", "SP4")
+bagfootRes_neo_adult$nametoshow_pre = bagfootRes_neo_adult$nametoshow
+`%notin%` <- Negate(`%in%`)
+
+for (i in 1:nrow(bagfootRes_neo_adult)){
+  if (bagfootRes_neo_adult[i, 'nametoshow_pre'] %notin% names_in_pre)
+    bagfootRes_neo_adult[i, 'nametoshow_pre'] = ""
+}
+
+library(ggrepel)
+library(ggtext)
+ggplot(bagfootRes_neo_adult, aes(x = x,  y = y)) +
+  geom_polygon(data = hull.loop, fill = "gray", alpha = 0.35) +
+  geom_polygon(data = hull.bag, fill = "gray", alpha = 0.35) +
+  geom_point(data = pxy.outlier, col = "black", pch = 16, cex = 1.5) +
+  theme(panel.background = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #text = element_text(family="ArialMT", size=25),
+        axis.title.x = element_markdown(family="ArialMT")
+  ) + 
+  geom_text_repel(label=bagfootRes_neo_adult$nametoshow_pre, max.overlaps = 100, 
+                  min.segment.length = unit(0, 'lines'))+
+  geom_hline(yintercept=0)+
+  geom_vline(xintercept=0)+
+  labs(
+    x = "\u0394FA<br><span style='color:#017100'>Neonatal</span> - <span style='color:#88FA4E'>Adult</span>",
+    y = "\u0394FPD"
+  )
+ggsave(
+  "bagfoot/remake_plots/bagfootRes_neo_adult.pdf",
+  plot = last_plot(),
+  device = cairo_pdf,
+  width = 10,
+  height = 10,
+  dpi = 300
+)
+
+
+
+
+# VM TN
+
+bagfootRes_vm_tn = read.table("bagfoot/res_vm_tn/bagplot_cutcount_diff_total_footprinting_depth_vm-tn_qvalue_bagplot_output.csv", 
+                              header = T,
+                              sep = ",")
+colnames(bagfootRes_vm_tn)[3:4] = c("x", "y")
+# prove plot should look same as automated generated one
+library(aplpack)
+bagplot(bagfootRes_vm_tn$x, bagfootRes_vm_tn$y, factor = 1.5,
+        show.looppoints = FALSE, show.bagpoints = FALSE,
+        show.baghull = TRUE, show.loophull = TRUE,
+        show.whiskers = F, col.looppoint = "#000000",
+        cex = 2, pch = 0, cex.lab = 1.5, cex.axis = 1.5,
+        lwd = 3)
+
+bagfootRes_vm_tn_xy = bagfootRes_vm_tn[,c("x", "y")]
+rownames(bagfootRes_vm_tn_xy) = bagfootRes_vm_tn_xy$name
+
+
+library(aplpack)
+bag <- compute.bagplot(bagfootRes_vm_tn_xy, approx.limit = nrow(bagfootRes_vm_tn_xy),
+                       factor = 1.5)
+
+hull.loop <- data.frame(x = bag$hull.loop[,1], y = bag$hull.loop[,2])
+hull.bag <- data.frame(x = bag$hull.bag[,1], y = bag$hull.bag[,2])
+pxy.outlier <- data.frame(x = bag$pxy.outlier[,1], y = bag$pxy.outlier[,2])
+
+findOutliersIndex <- function(data, outlier) {
+  cols <- colnames(outlier)
+  dat2 <- data[, cols]
+  nr = nrow(outlier)
+  rg = 1:nrow(dat2)
+  matchingIdx = unique(sort(unlist(sapply(1:nr, function(ii) rg[(outlier[ii,
+                                                                         2] == dat2[, 2]) & (outlier[ii, 1] == dat2[, 1])]))))
+  if (length(matchingIdx) != nr) {
+    stop("cannot locate outliers in the data.")
+  }
+  matchingIdx
+}
+nametoshow = rep("", nrow(bagfootRes_vm_tn))
+if (!is.null(pxy.outlier)) {
+  outlieridx = findOutliersIndex(bagfootRes_vm_tn, pxy.outlier)
+  nametoshow[outlieridx] = as.character(bagfootRes_vm_tn$name[outlieridx])
+}
+bagfootRes_vm_tn$nametoshow = nametoshow                                         
+# Finish the ggplot command
+
+for (i in 1:nrow(bagfootRes_vm_tn)){
+  if (bagfootRes_vm_tn[i,]$x * bagfootRes_vm_tn[i,]$y < 0){
+    bagfootRes_vm_tn[i,]$nametoshow = ""
+  }
+}                     
+
+head(bagfootRes_vm_tn)
+
+# print selected labels only
+names_in_pre = c("EOMES", "MGA", "TBX21", "TBX20", "TBX6", "RUNX2", "RUNX3", "BATF", "BATF3", "FOS", "FOS::JUN", "JUNB", "JUND", "BACH1", "BACH2",
+                 "EGR1", "EGR3", "SP4", "SP3", "SP1", 'KLF2', 'Klf12')
+bagfootRes_vm_tn$nametoshow_pre = bagfootRes_vm_tn$nametoshow
+`%notin%` <- Negate(`%in%`)
+
+for (i in 1:nrow(bagfootRes_vm_tn)){
+  if (bagfootRes_vm_tn[i, 'nametoshow_pre'] %notin% names_in_pre)
+    bagfootRes_vm_tn[i, 'nametoshow_pre'] = ""
+}
+
+library(ggrepel)
+library(ggtext)
+ggplot(bagfootRes_vm_tn, aes(x = x,  y = y)) +
+  geom_polygon(data = hull.loop, fill = "gray", alpha = 0.35) +
+  geom_polygon(data = hull.bag, fill = "gray", alpha = 0.35) +
+  geom_point(data = pxy.outlier, col = "black", pch = 16, cex = 1.5) +
+  theme(panel.background = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #text = element_text(family="ArialMT", size=25),
+        axis.title.x = element_markdown(family="ArialMT")
+  ) + 
+  geom_text_repel(label=bagfootRes_vm_tn$nametoshow_pre, max.overlaps = 100, 
+                  min.segment.length = unit(0, 'lines'))+
+  geom_hline(yintercept=0)+
+  geom_vline(xintercept=0)+
+  labs(
+    x = "\u0394FA<br><span style='color:#004D7F'>VM</span> - <span style='color:#56C1FF'>TN</span>",
+    y = "\u0394FPD"
+  )
+ggsave(
+  "bagfoot/remake_plots/bagfootRes_vm_tn.pdf",
+  plot = last_plot(),
+  device = cairo_pdf,
+  width = 10,
+  height = 10,
+  dpi = 300
+)
