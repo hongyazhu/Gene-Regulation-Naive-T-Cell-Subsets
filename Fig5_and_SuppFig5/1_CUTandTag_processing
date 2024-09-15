@@ -1,4 +1,4 @@
-# by Paul Munn at TREx of Cornell University
+# by Paul Munn and Hongya Zhu
 
 trim_galore \
     --quality 20 --gzip --length 20 --paired --fastqc \
@@ -23,14 +23,28 @@ java -jar /programs/bin/picard-tools/picard.jar \
     VALIDATION_STRINGENCY=LENIENT \
     TMP_DIR=tmp
 
-macs2 callpeak -t $DEDUP_bam_file \
-    -f BAMPE \
-    -n ${prefix} \
-    -g $genomeSize \
-    -q $params.callPeak_q_value \
-    --nolambda \
-    --fe-cutoff 1 \
-    --keep-dup all 
-
 samtools index $DEDUP_bam_file
 bamCoverage -b $DEDUP_bam_file -o \${prefix}.bw --normalizeUsing CPM --binSize 50 --numberOfProcessors 12 --effectiveGenomeSize $effective_genome_size
+
+macs3 callpeak -t lin28Tg_mCD8_EOMES_rep2.DEDUP.bam WT_mCD8_EOMES_rep2.DEDUP.bam WT_mCD8_EOMES_rep3.DEDUP.bam -c lin28Tg_mCD8_IgG_rep2.DEDUP.bam lin28Tg_mCD8_IgG_rep3.DEDUP.bam WT_mCD8_IgG_rep1.DEDUP.bam WT_mCD8_IgG_rep2.DEDUP.bam WT_mCD8_IgG_rep3.DEDUP.bam -f BAMPE -n EOMES_mCD8_1e-2_allSamplesMergedPeakset -g mm -q 1e-2 --fe-cutoff 10 --nolambda --outdir MACS3_peaks
+
+# filtering in R
+cutoff = '1e-2'
+file_peaks <- paste0('EOMES_mCD8_', cutoff, '_allSamplesMergedPeakset_peaks.narrowPeak')
+peaks1e02 = read.table(file_peaks, header = FALSE, 
+                       col.names = c("chr","start","end","Peak_ID","score","strand","fold_change","log_pvalue","log_qvalue","Summit_distance")) # 22501 peaks
+
+peaks1e02_1e20 = peaks1e02[peaks1e02$log_qvalue > 20,] # 18571 peaks
+write.table(peaks1e02_1e20, 'peaks1e02_1e20.narrowPeak', quote = F, row.names = F, col.names = F, sep = '\t')
+
+peaks1e02_1e50 = peaks1e02[peaks1e02$log_qvalue > 50,] # 10403 peaks
+write.table(peaks1e02_1e50, 'peaks1e02_1e50.narrowPeak', quote = F, row.names = F, col.names = F, sep = '\t')
+
+peaks1e02_1e100 = peaks1e02[peaks1e02$log_qvalue > 100,] # 5510 peaks
+write.table(peaks1e02_1e100, 'peaks1e02_1e100.narrowPeak', quote = F, row.names = F, col.names = F, sep = '\t')
+
+peaks1e02_1e150 = peaks1e02[peaks1e02$log_qvalue > 150,] # 3269 peaks
+write.table(peaks1e02_1e150, 'peaks1e02_1e150.narrowPeak', quote = F, row.names = F, col.names = F, sep = '\t')
+
+peaks1e02_1e180 = peaks1e02[peaks1e02$log_qvalue > 180,] # 2506 peaks
+write.table(peaks1e02_1e180, 'peaks1e02_1e180.narrowPeak', quote = F, row.names = F, col.names = F, sep = '\t')
