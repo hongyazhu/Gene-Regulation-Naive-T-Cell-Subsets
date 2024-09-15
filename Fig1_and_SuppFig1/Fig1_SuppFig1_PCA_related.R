@@ -2,8 +2,8 @@
 
 ### before combat, show source and cell type (Supplementary Fig. 1A)
 
-counts = read.table("/path/to/counts_vst_blindT.txt", sep = "\t", header = T)
-sample_info = read.table("/path/to/sample_info.txt", header = T, sep = "\t")
+counts = read.table("counts_vst_blindT.txt", sep = "\t", header = T)
+sample_info = read.table("sample_info.txt", header = T, sep = "\t")
 
 library(ggfortify)
 ntop <- 500
@@ -40,14 +40,14 @@ ggplot(pca_plot, aes(x = PC1, y= PC2)) +
   scale_color_manual(limits = c('Clean Project', 'Mir29 Project', 'Smith 2018', 'Wissink 2015', 'Lin28 Project', 'Veteran Project'),
                      labels = c('Tabilas et al. (2022)', 'Yee Mon et al. (2021)', 'Smith et al. (2018)', 'Wissink et al. (2015)', 'Lin28 Project', 'Veteran Project'),
                      values = mycolors)
-ggsave("/path/to/PCA/PCA_vst_blindT_sourceCelltype.pdf", plot = last_plot(), device = "pdf",
+ggsave("PCA/PCA_vst_blindT_sourceCelltype.pdf", plot = last_plot(), device = "pdf",
        width = 6.5, height = 4, dpi = 300)
 
 
 ### PCA after batch effect removal (Fig. 1B)
 
-counts_combat = read.table("/path/to/counts_vst_blindT_combat.txt", sep = "\t", header = T)
-sample_info = read.table("/path/to/sample_info.txt", header = T, sep = "\t")
+counts_combat = read.table("counts_vst_blindT_combat.txt", sep = "\t", header = T)
+sample_info = read.table("sample_info.txt", header = T, sep = "\t")
 
 library(ggfortify)
 ntop <- 500
@@ -93,14 +93,14 @@ ggplot(pca_plot, aes(x = PC1, y= PC2)) +
   scale_shape_manual(limits = c('Adult Clean', 'Neo Clean', 'Adult Dirty', 'Neo Dirty'),
                      values = c(16,1,17,2))+
   theme(legend.text=element_markdown(size=12)) 
-ggsave("/path/to/PCA/PCA_vst_blindT_combat_CelltypeCleanAge.pdf", plot = last_plot(), device = "pdf",
+ggsave("PCA/PCA_vst_blindT_combat_CelltypeCleanAge.pdf", plot = last_plot(), device = "pdf",
        width = 6, height = 4, dpi = 300)
 
 
 ### get loadings (Fig. 1D)
 
 loadings <- as.data.frame(pca$rotation[, seq_len(2)])
-write.table(loadings, '/path/to/PCA/PCA_loadings12.txt', quote = F, sep = '\t')
+write.table(loadings, 'PCA/PCA_loadings12.txt', quote = F, sep = '\t')
 loadings$genename = rownames(loadings)
 for (i in 1:nrow(loadings)){
   if (loadings[i, 'PC1'] > 0){
@@ -124,7 +124,7 @@ ggplot(loadings_sortPC1_toplot, aes(y=reorder(genename, PC1), x=PC1)) +
         panel.grid.minor = element_blank())+
   geom_vline(aes(xintercept = 0)) +
   scale_color_manual(limits = c('PC1+', 'PC1-'), values = c('#00306FFF', '#EAD357FF'))
-ggsave(filename = paste0("/path/to/PCA/PC1_loadings_top", ngenes, ".pdf"), device = "pdf", height = 3, width = 4.5)
+ggsave(filename = paste0("PCA/PC1_loadings_top", ngenes, ".pdf"), device = "pdf", height = 3, width = 4.5)
 
 
 ### make eigencorplot (Fig. 1C)
@@ -147,7 +147,7 @@ metadata_tmp = metadata
 colnames(metadata_tmp) = c('Source', 'Neonatal/Adult', 'VM/TN', 'Veteran', 'Dirty/Clean')
 metadata_tmp = metadata_tmp[,rev(c(3,2,5,4,1))]
 p <- pca(t(mat), metadata = metadata_tmp)
-pdf("/path/to/PCA/PCA_eigencorplot_r.pdf", width = 7, height = 4)
+pdf("PCA/PCA_eigencorplot_r.pdf", width = 7, height = 4)
 library(RColorBrewer)
 eigencorplot(p,
              components = getComponents(p, 1:3),
@@ -173,8 +173,8 @@ dev.off()
 # after combat
 
 
-counts_combat = read.table("/path/to/counts_vst_blindT_combat.txt", sep = "\t", header = T)
-sample_info = read.table("/path/to/sample_info.txt", header = T, sep = "\t")
+counts_combat = read.table("counts_vst_blindT_combat.txt", sep = "\t", header = T)
+sample_info = read.table("sample_info.txt", header = T, sep = "\t")
 
 library(ggfortify)
 ntop <- 500
@@ -254,7 +254,7 @@ pc12_clean = ggplot(pca_plot, aes(x = PC1, y= PC2)) +
 library(cowplot)
 pc12.combined = plot_grid(pc12_celltype, pc12_age, pc12_clean, align="hv", ncol = 2)
 ggsave(
-  paste0('/path/to/PCA/PCA_types_pc12_noshape.pdf'),
+  paste0('PCA/PCA_types_pc12_noshape.pdf'),
   plot = pc12.combined,
   device = "pdf",
   width = 10,
@@ -307,7 +307,7 @@ pc13_clean = ggplot(pca_plot, aes(x = PC1, y= PC3)) +
 
 pc13.combined = plot_grid(pc13_celltype, pc13_age, pc13_clean, align="hv", ncol = 2)
 ggsave(
-  paste0('/path/to/PCA/PCA_types_pc13_noshape.pdf'),
+  paste0('PCA/PCA_types_pc13_noshape.pdf'),
   plot = pc13.combined,
   device = "pdf",
   width = 10,
