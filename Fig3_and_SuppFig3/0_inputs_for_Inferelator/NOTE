@@ -8,4 +8,4 @@ potRegFile = 'TF/regulators.txt';
 generated as in generate_potRegFile.R
 
 priorFile = 'prior/priors_more_than_atac_nofli1/chip_ko_network_atac.tsv';
-In progress
+generated as in generate_PriorFile.sh
