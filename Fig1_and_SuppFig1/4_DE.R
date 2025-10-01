@@ -1,4 +1,11 @@
-# Differential expression analysis
+###########################
+# Differential expression #
+# 1. Load counts & metadata
+# 2. DE: Clean vs Dirty
+# 3. DE: Adult vs Neonatal
+# 4. DE: TN vs VM
+# 5. Make volcano plots
+###########################
 
 library(DESeq2)
 padj_cutoff = 1 # include all
